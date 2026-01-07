@@ -42,7 +42,6 @@
             flex-shrink: 0;
         }
 
-        /* 頂部看板 */
         .board {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -72,7 +71,6 @@
             min-height: 40px;
         }
 
-        /* 中間展示區 */
         .main-display-area {
             display: flex;
             flex-direction: row;
@@ -83,8 +81,9 @@
             min-height: 0;
         }
 
+        /* 歷史紀錄區 (2/3) */
         .history-section {
-            flex: 1;
+            flex: 2;
             display: flex;
             flex-direction: column;
             min-width: 0;
@@ -94,18 +93,32 @@
             background-color: #0f172a;
             border: 2px solid #2d3561;
             border-radius: 12px;
-            padding: 15px;
+            padding: 20px;
             font-family: 'Consolas', monospace;
-            font-size: 26px;
-            font-weight: bold;
+            font-size: 36px;
+            font-weight: 900;
             flex-grow: 1;
             overflow-y: auto;
-            line-height: 1.5;
+            line-height: 1.8;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
         }
 
+        /* 重點修正：確保英文字母與數字不被切斷 */
+        .history-display span {
+            white-space: nowrap;
+            display: inline-block; /* 確保整體換行 */
+        }
+
+        .arrow-sep {
+            color: #334155;
+            margin: 0 8px;
+            font-size: 28px;
+            display: inline-block;
+            white-space: normal; /* 箭頭後可以換行 */
+        }
+
         .latest-section {
-            flex: 1.2;
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -122,7 +135,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(100px, 20vh, 220px); /* 再次加大字體 */
+            font-size: clamp(80px, 14vw, 160px); 
             font-weight: 900;
             color: #ffffff !important;
             transition: all 0.3s ease;
@@ -142,11 +155,10 @@
         .btn-new { background-color: #27ae60; color: white; }
         .btn-reset { background-color: #e74c3c; color: white; }
 
-        /* 號碼方格：回復 25 欄，極小化間距 */
         .numbers-grid {
             display: grid;
             grid-template-columns: repeat(25, 1fr); 
-            gap: 2px; /* 極小間距 */
+            gap: 2px;
             padding: 5px;
             flex-shrink: 0;
             width: 100%;
@@ -161,7 +173,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 19px; /* 字體放大一點 */
+            font-size: 19px;
             font-weight: 900;
             border-radius: 2px;
             border: 1px solid #333;
@@ -170,7 +182,6 @@
 
         .num-btn.active { border: 1px solid #fff; box-shadow: inset 0 0 10px rgba(255,255,255,0.2); }
 
-        /* 顏色標籤 */
         .B-fg { color: var(--color-B); } .I-fg { color: var(--color-I); } .N-fg { color: var(--color-N); } .G-fg { color: var(--color-G); } .O-fg { color: var(--color-O); }
         .B-bg { background-color: var(--color-B); } .I-bg { background-color: var(--color-I); } .N-bg { background-color: var(--color-N); } .G-bg { background-color: var(--color-G); } .O-bg { background-color: var(--color-O); }
     </style>
@@ -241,7 +252,7 @@
             });
             const historyEl = document.getElementById('history-display');
             if (data.length === 0) historyEl.innerHTML = "<span style='color:#444'>WAITING...</span>";
-            else historyEl.innerHTML = data.map(n => `<span class="${getLetter(n)}-fg">${getLetter(n)}${n}</span>`).join(' <span style="color:#333">→</span> ');
+            else historyEl.innerHTML = data.map(n => `<span class="${getLetter(n)}-fg">${getLetter(n)}${n}</span>`).join('<span class="arrow-sep">→</span>');
             historyEl.scrollTop = historyEl.scrollHeight;
 
             const latestBox = document.getElementById('latest-box');
@@ -288,4 +299,3 @@
     </script>
 </body>
 </html>
-
