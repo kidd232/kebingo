@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1024, initial-scale=1.0">
+    <title>嘉儀嘉年會 BINGO - 專業網頁版</title>
+    <style>
+        :root {
+            --bg-color: #1a1a2e;
+            --box-bg: #16213e;
+            --btn-idle: #2d3561;
+            --text-color: #ecf0f1;
+            --color-B: #e74c3c;
+            --color-I: #3498db;
+            --color-N: #2ecc71;
+            --color-G: #f39c12;
+            --color-O: #9b59b6;
+            --color-gold: #f1c40f;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+            margin: 0;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .event-title {
+            text-align: center;
+            font-size: 38px;
+            font-weight: bold;
+            color: var(--color-gold);
+            margin: 5px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* 頂部分區看板 */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            padding: 0 15px;
+            flex-shrink: 0;
+        }
+
+        .group-box {
+            background-color: var(--box-bg);
+            border: 2px solid #444;
+            text-align: center;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .group-header {
+            font-size: 32px;
+            font-weight: bold;
+            padding: 5px 0;
+            color: white;
+        }
+
+        .group-numbers {
+            font-size: 20px;
+            padding: 10px;
+            word-wrap: break-word;
+            line-height: 1.3;
+            font-weight: bold;
+            min-height: 60px;
+        }
+
+        /* 水平並排容器 */
+        .main-display-area {
+            display: flex;
+            flex-direction: row;
+            gap: 15px;
+            padding: 10px 15px;
+            flex-grow: 1; /* 彈性填滿高度 */
+            align-items: stretch;
+            min-height: 0; /* 防止溢出 */
+        }
+
+        /* 歷史紀錄區塊調整 */
+        .history-section {
+            flex: 1; /* 寬度 50% */
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(0,0,0,0.1);
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        /* 最後號碼區塊調整 */
+        .latest-section {
+            flex: 1; /* 寬度 50% */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0,0,0,0.1);
+            border-radius: 10px;
+            padding: 10px;
+            border: 1px solid #333;
+        }
+
+        .round-info {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2ecc71;
+            margin-bottom: 5px;
+        }
+
+        .history-display {
+            background-color: #0f172a;
+            border: 2px solid #2d3561;
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'Consolas', monospace;
+            font-size: 26px;
+            font-weight: bold;
+            flex-grow: 1; /* 讓紀錄區自動向下延伸 */
+            overflow-y: auto;
+            line-height: 1.5;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+            text-align: left;
+        }
+
+        .latest-title {
+            font-size: 18px;
+            color: #bdc3c7;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .latest-number-box {
+            background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
+            border: 4px solid var(--color-gold);
+            border-radius: 20px;
+            width: 80%;
+            flex-grow: 0.8; /* 讓它在高度上也有一定佔比 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 100px; /* 寬度變大後，字體再加強 */
+            font-weight: 900;
+            box-shadow: 0 0 30px rgba(241, 196, 15, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        /* 導覽列 */
+        .nav-bar {
+            text-align: center;
+            padding: 5px 0;
+            flex-shrink: 0;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 0 5px;
+        }
+
+        .btn-nav { background-color: #34495e; color: white; }
+        .btn-new { background-color: #27ae60; color: white; }
+        .btn-reset { background-color: #e74c3c; color: white; }
+
+        /* 底部號碼區 */
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(25, 1fr);
+            gap: 4px;
+            padding: 5px 15px 10px 15px;
+            flex-shrink: 0;
+        }
+
+        .num-btn {
+            background-color: var(--btn-idle);
+            color: var(--text-color);
+            aspect-ratio: 1.4 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 3px;
+            border: 1px solid #3e4a85;
+        }
+
+        .num-btn.active { border: 2px solid #fff; }
+
+        /* 配色標籤 */
+        .B-bg { background-color: var(--color-B); }
+        .I-bg { background-color: var(--color-I); }
+        .N-bg { background-color: var(--color-N); }
+        .G-bg { background-color: var(--color-G); }
+        .O-bg { background-color: var(--color-O); }
+        .B-fg { color: var(--color-B); }
+        .I-fg { color: var(--color-I); }
+        .N-fg { color: var(--color-N); }
+        .G-fg { color: var(--color-G); }
+        .O-fg { color: var(--color-O); }
+
+    </style>
+</head>
+<body>
+
+    <div class="event-title">嘉儀嘉年會 BINGO</div>
+
+    <div class="board">
+        <div class="group-box"><div class="group-header B-bg">B</div><div id="board-B" class="group-numbers"></div></div>
+        <div class="group-box"><div class="group-header I-bg">I</div><div id="board-I" class="group-numbers"></div></div>
+        <div class="group-box"><div class="group-header N-bg">N</div><div id="board-N" class="group-numbers"></div></div>
+        <div class="group-box"><div class="group-header G-bg">G</div><div id="board-G" class="group-numbers"></div></div>
+        <div class="group-box"><div class="group-header O-bg">O</div><div id="board-O" class="group-numbers"></div></div>
+    </div>
+
+    <div class="main-display-area">
+        <div class="history-section">
+            <div id="round-label" class="round-info">第 1 輪 (進行中)</div>
+            <div id="history-display" class="history-display">READY...</div>
+        </div>
+
+        <div class="latest-section">
+            <div class="latest-title">最後點選</div>
+            <div id="latest-box" class="latest-number-box">--</div>
+        </div>
+    </div>
+
+    <div class="nav-bar">
+        <button class="btn-nav" onclick="changeRound(-1)">◀ 前一輪</button>
+        <button class="btn-new" onclick="newGame()">🎮 結束本輪 / 新遊戲</button>
+        <button class="btn-reset" onclick="resetCurrent()">清空號碼</button>
+        <button class="btn-nav" onclick="changeRound(1)">後一輪 ▶</button>
+    </div>
+
+    <div class="numbers-grid" id="numbers-grid"></div>
+
+    <script>
+        const groups = { 'B': [1,15], 'I': [16,30], 'N': [31,45], 'G': [46,60], 'O': [61,75] };
+        let drawnNumbers = [];
+        let gameHistory = [];
+        let currentViewIndex = -1;
+
+        function getLetter(n) {
+            if (n <= 15) return 'B';
+            if (n <= 30) return 'I';
+            if (n <= 45) return 'N';
+            if (n <= 60) return 'G';
+            return 'O';
+        }
+
+        const grid = document.getElementById('numbers-grid');
+        for (let i = 1; i <= 75; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'num-btn';
+            btn.id = `btn-${i}`;
+            btn.innerText = i;
+            btn.onclick = () => toggleNumber(i);
+            grid.appendChild(btn);
+        }
+
+        function toggleNumber(n) {
+            if (currentViewIndex !== -1) return;
+            const index = drawnNumbers.indexOf(n);
+            if (index > -1) drawnNumbers.splice(index, 1);
+            else drawnNumbers.push(n);
+            updateUI();
+        }
+
+        function updateUI() {
+            const data = currentViewIndex === -1 ? drawnNumbers : gameHistory[currentViewIndex];
+            
+            ['B', 'I', 'N', 'G', 'O'].forEach(L => {
+                const nums = data.filter(n => getLetter(n) === L).sort((a,b) => a-b);
+                document.getElementById(`board-${L}`).innerText = nums.join(', ');
+            });
+
+            const historyEl = document.getElementById('history-display');
+            if (data.length === 0) {
+                historyEl.innerHTML = "<span style='color:#444'>WAITING...</span>";
+            } else {
+                historyEl.innerHTML = data.map(n => `<span class="${getLetter(n)}-fg">${getLetter(n)}${n}</span>`).join(' <span style="color:#444">→</span> ');
+            }
+            historyEl.scrollTop = historyEl.scrollHeight;
+
+            const latestBox = document.getElementById('latest-box');
+            if (data.length === 0) {
+                latestBox.innerText = "--";
+                latestBox.style.color = "var(--text-color)";
+                latestBox.style.borderColor = "var(--color-gold)";
+                latestBox.style.boxShadow = "none";
+            } else {
+                const lastNum = data[data.length - 1];
+                const L = getLetter(lastNum);
+                latestBox.innerText = L + lastNum;
+                latestBox.className = `latest-number-box ${L}-fg`;
+                latestBox.style.borderColor = `var(--color-${L})`;
+                latestBox.style.boxShadow = `0 0 40px var(--color-${L})`;
+            }
+
+            const label = document.getElementById('round-label');
+            label.innerText = currentViewIndex === -1 ? `第 ${gameHistory.length + 1} 輪 (進行中)` : `第 ${currentViewIndex + 1} 輪 (紀錄)`;
+            label.style.color = currentViewIndex === -1 ? "#2ecc71" : "#e74c3c";
+
+            for (let i = 1; i <= 75; i++) {
+                const btn = document.getElementById(`btn-${i}`);
+                btn.className = data.includes(i) ? `num-btn active ${getLetter(i)}-bg` : `num-btn`;
+            }
+        }
+
+        function newGame() {
+            if (drawnNumbers.length === 0) return;
+            if (confirm("是否結束目前這一輪並保存歷史紀錄？")) {
+                gameHistory.push([...drawnNumbers]);
+                drawnNumbers = [];
+                currentViewIndex = -1;
+                updateUI();
+            }
+        }
+
+        function resetCurrent() {
+            if (currentViewIndex === -1 && drawnNumbers.length > 0) {
+                if (confirm("確定要重置目前這一輪的號碼嗎？")) {
+                    drawnNumbers = [];
+                    updateUI();
+                }
+            }
+        }
+
+        function changeRound(dir) {
+            if (gameHistory.length === 0) return;
+            if (currentViewIndex === -1) {
+                if (dir === -1) currentViewIndex = gameHistory.length - 1;
+            } else {
+                currentViewIndex += dir;
+                if (currentViewIndex >= gameHistory.length) currentViewIndex = -1;
+                else if (currentViewIndex < 0) currentViewIndex = 0;
+            }
+            updateUI();
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>
