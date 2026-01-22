@@ -239,8 +239,16 @@
         function toggleNumber(n) {
             if (currentViewIndex !== -1) return;
             const idx = drawnNumbers.indexOf(n);
-            if (idx > -1) drawnNumbers.splice(idx, 1);
-            else drawnNumbers.push(n);
+            if (idx > -1) {
+                const letter = getLetter(n);
+                if (confirm(`確定要取消選取號碼 ${letter}${n} 嗎？`)) {
+                    drawnNumbers.splice(idx, 1);
+                } else {
+                    return;
+                }
+            } else {
+                drawnNumbers.push(n);
+            }
             updateUI();
         }
 
@@ -299,5 +307,3 @@
     </script>
 </body>
 </html>
-
-
